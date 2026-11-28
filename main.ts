@@ -18,7 +18,7 @@
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -51,3 +51,12 @@ const DOSSIER_CAPS = {
 };
 
 writeFileSync(join(out, 'dossier.json'), buildDossier(out, DOSSIER_CAPS));
+
+// Say what landed, so a local run shows its result instead of silence.
+const dossierBytes = statSync(join(out, 'dossier.json')).size;
+const shotCount = existsSync(join(out, 'screenshots'))
+  ? readdirSync(join(out, 'screenshots')).length
+  : 0;
+console.log(
+  `GRAVY HEIST handed in: game/ + ${shotCount} screenshot(s) copied to ${out}, dossier.json (${dossierBytes} bytes) written.`,
+);
